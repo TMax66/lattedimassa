@@ -1,6 +1,7 @@
 library(tidyverse)
 library(googlesheets)
 
+rm(list=ls())
 sheet <- gs_title("LMassa")
 data<-gs_read(sheet)
 data$dt_prelievo<-as.Date(data$dt_prelievo, origin=as.Date("1970-01-01"))
@@ -11,3 +12,6 @@ data%>%as.tibble()%>%
   arrange(desc(dt_prelievo))
 
 
+x<-data %>% 
+  filter(prova=="Proteine")
+hist(x$risnum)
