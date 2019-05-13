@@ -1,0 +1,12 @@
+name: lattedimassa
+title: lattedimassa
+username:
+account: bgizsler
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 922270
+bundleId: 2075072
+url: https://bgizsler.shinyapps.io/lattedimassa/
+when: 1557493696.55866
+asMultiple: FALSE
+asStatic: FALSE

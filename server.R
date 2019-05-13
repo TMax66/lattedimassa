@@ -3,33 +3,45 @@
  server<-function(input, output){
 
 
+   
+   
+   output$info<-DT::renderDataTable(
+     latte %>% 
+       filter(codaz==input$cod) %>% 
+       arrange(desc(dtprel)) %>% 
+       select("proprietario"=propr, "ultimo controllo"=dtprel1) %>% 
+     head(1), 
+     options = list(searching=FALSE, dom = 't'))
+     
+     
+     
+  
+ 
+     
+   
 
 #Pagina 1
   
-  output$distPlot <- renderPlot({
-    latte %>%
-      filter(codaz==input$cod)%>%
-      filter(prova==input$cod2)%>%
-      #filter(anno==input$slider1)%>%
-      #filter(range==input$slider2)%>%
-      ggplot(aes(dtprel, risnum))+geom_line()+geom_point()
-  
-      
-    })
-  output$range <- renderPrint({ input$slider2 })
+  # output$distPlot <- renderPlot({
+  #   latte %>%
+  #     filter(codaz==input$cod)%>%
+  #     filter(prova==input$cod2)%>%
+  #     ggplot(aes(dtprel, risnum))+geom_line()+geom_point()
+  # 
+  #     
+  #   })
+  # output$range <- renderPrint({ input$slider2 })
   
   
-  output$dt2<-DT::renderDataTable({
-    
+  output$dt2<-DT::renderDataTable(
     latte %>%
       filter(prova==input$cod2)%>%
       filter(codaz==input$cod) %>%
-      #filter(anno==input$slider1)%>%
-      #filter(range==input$slider2)%>%
-      select(anno, "conferimento"=nconf, vet, prova, "esito"=risnum) %>%
-      arrange(anno)
-
-  })
+      select(anno,  "conferimento"=nconf, vet, prova, "esito"=risnum) %>%
+      arrange(anno),
+    rownames=FALSE,
+      options=list(dom = 't')
+  )
   
   
 #pagina 2
@@ -45,16 +57,15 @@
   
   #output$range <- renderPrint({ input$slider3 })
   
-  output$dt3<-DT::renderDataTable({
+  output$dt3<-DT::renderDataTable(
 
     latte %>%
-    filter(codaz==input$cod3) %>%
+    filter(codaz==input$cod) %>%
     filter(prova==input$cod4) %>%
-      #filter(range==input$slider3)%>%
-      select("data"=dtprel, "conferimento"=nconf,codaz, vet, prova, esito) %>%
-      arrange(data)
-   
-  })
+      select(anno, "conferimento"=nconf, vet, prova, esito) %>%
+      arrange(anno),
+    rownames=FALSE,options=list(dom = 't')
+)
   
   
   
