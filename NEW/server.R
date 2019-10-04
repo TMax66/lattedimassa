@@ -2,6 +2,20 @@
  
  server<-function(input, output, session){
    
+
+   output$Quest <- renderValueBox({
+     valueBox(
+       dim(ds)[1], "# Aziende", icon = icon("keyboard"),
+       color = "red"
+     )
+   })
+   
+   
+   
+   
+   
+   
+#####Base dati######################################
    milk<-reactive({   
      latte %>% 
        select(dtconf, codaz, prova, esito, vet, ageziologico,risnum, anno)})
@@ -14,4 +28,7 @@
    )
    
 
+   
+   
+   
 }
