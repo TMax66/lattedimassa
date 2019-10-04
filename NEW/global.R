@@ -1,18 +1,19 @@
 library(tidyverse)
 library(googlesheets)
+library(shinydashboard)
 library(lubridate)
+library(knitr)
+library(kableExtra)
 library(DT)
 
 rm(list=ls())
 sheet <- gs_title("LMassa")
-latte<-gs_read(sheet,
-               locale = readr::locale(decimal_mark = ","))
-
+latte<-gs_read(sheet)
+latte$risnum<-as.numeric(sub(",", ".", sub(".", "", latte$risnum, fixed=TRUE), fixed=TRUE))
+latte$codaz<-casefold(latte$codaz, upper = TRUE)
 latte$dtprel<-mdy(latte$dtprel)
 latte$dtprel1<-format(latte$dtprel, "%d-%m-%Y")
 latte<-mutate(latte,anno=year(dtprel))
-#latte$anno<-as.Date((paste(latte$anno,"-01","-01",sep="")))
-#latte$anno<-substr(latte$anno, 1,4)
 
 
 
