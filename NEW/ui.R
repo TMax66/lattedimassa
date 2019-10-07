@@ -19,38 +19,32 @@ ui <- dashboardPage(
     #                           }
     #                           '))),
  tabItems(
-    #   #####primo tab item#####
-    #   tabItem(
-    #     tabName = "overview",
-    #     fluidPage(
+    #####primo tab item#####
+     tabItem(
+     tabName = "overview",
+         fluidPage(
     #       
     #       
     #       
     #       
     #       
     #       # box(width=12, solidHeader = TRUE,
-    #       fluidRow(
-    #         
-    #         # column(3,
-    #         #        valueBoxOutput("az", width=NULL),
-    #         #        valueBoxOutput("prot", width = NULL),
-    #         #        valueBoxOutput("grasso", width=NULL),
-    #         #        valueBoxOutput("scc", width=NULL),
-    #         #        valueBoxOutput("lattosio", width=NULL)),
-    #         # 
-    #         # column(8,
-    #         #        selectInput("tipo", "Seleziona la tipologia di ricerca",
-    #         #                    c("Tutte",unique(as.character(ds$Tipologia)))),
-    #         #        plotOutput("trend", height = 500))
-    #       )
-    #       
-    #       
-    #       
-    #       
-    #       #),
-    #       
-    #     )
-    #   )
+   fluidRow(
+    column(3,
+     valueBoxOutput("aziende", width=NULL),
+     valueBoxOutput("camp", width = NULL),
+     valueBoxOutput("prot", width=NULL),
+     valueBoxOutput("grasso", width=NULL),
+     valueBoxOutput("lattosio", width=NULL),
+     valueBoxOutput("css", width=NULL),
+     valueBoxOutput("cbt", width=NULL)),
+   
+     column(8,
+        selectInput("prova", "Seleziona il parametro",
+        c("Proteine", "Grasso", "Lattosio", "Carica batterica totale", "Cellule somatiche")),
+           plotOutput("p1", height = 500))
+ 
+      ))),
     #   ,
     #   #####secondo tab item########
     #   tabItem(

@@ -5,6 +5,7 @@ library(lubridate)
 library(knitr)
 library(kableExtra)
 library(DT)
+library(psych)
 
 rm(list=ls())
 sheet <- gs_title("LMassa")
@@ -18,12 +19,12 @@ latte<-mutate(latte,anno=year(dtprel))
 
 latte$codaz<-ifelse(latte$propr=="SUARDI LUIGI", "219BG035", latte$codaz )
 latte$codaz<-ifelse(latte$propr=="CAMPANA COSTANTINO E C. S.S", "245BG010", latte$codaz )
-latte<-
+latte<-latte %>% 
+  filter(!is.na(codaz))
 
-# latte %>% 
-#   group_by(codaz, anno, prova) %>% 
-#   filter(prova=="Proteine") %>%
-#  # filter(!is.na(esito)) %>% 
-#   ggplot(aes(x=anno, y=risnum))+geom_point()+geom_line()
-# 
-# 
+
+
+
+
+
+
