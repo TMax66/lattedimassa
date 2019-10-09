@@ -6,6 +6,7 @@ library(knitr)
 library(kableExtra)
 library(DT)
 library(psych)
+library(tidyr)
 
 rm(list=ls())
 sheet <- gs_title("LMassa")
@@ -17,12 +18,27 @@ latte$dtprel<-mdy(latte$dtprel)
 latte$dtprel1<-format(latte$dtprel, "%d-%m-%Y")
 latte<-mutate(latte,anno=year(dtprel))
 
+latte$prova2<-ifelse(
+  latte$prova=="Proteine" |latte$prova=="Grasso" | latte$prova=="Lattosio" |
+    latte$prova=="Proteine" | latte$prova=="Cellule somatiche" | latte$prova=="Urea" |
+    latte$prova== "Punto di congelamento" | latte$prova=="Caseine" |
+    latte$prova=="Carica batterica totale", "Quanti", "Quali"
+)
+
 latte$codaz<-ifelse(latte$propr=="SUARDI LUIGI", "219BG035", latte$codaz )
 latte$codaz<-ifelse(latte$propr=="CAMPANA COSTANTINO E C. S.S", "245BG010", latte$codaz )
 latte<-latte %>% 
   filter(!is.na(codaz))
 
 
+
+
+# mq<-latte %>% 
+#   filter(prova2=="Quali") %>% 
+#   filter(codaz=="114BG012") %>% 
+#   select(anno,prova,dtconf,nconf,esito) %>% 
+#   rowid_to_column() %>% 
+#   spread(anno,esito)
 
 
 

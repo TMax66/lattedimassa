@@ -100,13 +100,37 @@
    
    output$p1<-renderPlot(
      qual() %>% 
-       ggplot(aes(x=anno, y=y))+geom_point()+geom_line()
+       ggplot(aes(x=anno, y=y))+geom_point()+geom_line()+
+       labs(y=paste("media",input$prova))
        
    )
    
+####controlli qualitativi########
+   output$info<-DT::renderDataTable(
+     latte %>% 
+       filter(codaz==input$cod) %>% 
+       arrange(desc(dtprel)) %>% 
+       select("proprietario"=propr, "ultimo controllo"=dtprel1) %>% 
+       head(1), 
+     options = list(searching=FALSE, dom = 't'))
    
+
+   quali<-reactive({latte %>% 
+     filter(prova2=="Quali") %>%
+     filter(codaz==input$cod) %>%
+     select(prova,dtprel1,esito) %>% 
+     arrange(desc(dtprel1)) %>% 
+     pivot_wider(names_from=dtprel1,values_from=esito ) })
+     
+     
+   output$tq<-function(){
+     
+     knitr::kable(quali(), escape = F)%>% 
+       kable_styling("striped", full_width = T,fixed_thead = T)
+     
+   }
    
-   
+    
    
 #####Base dati######################################
    milk<-reactive({   
@@ -120,8 +144,9 @@
        pageLength = 10,buttons = c("csv",'excel'))
    )
    
-
-   
+  
+  
+  
    
    
 }
