@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1570776074279.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2506890900",
+    "id" : "F73523D6",
+    "lastKnownWriteTime" : 1570778080,
+    "last_content_update" : -2147483648,
+    "path" : "D:/Dati/vito.tranquillo/gitProject/lattedimassa/NEW/global.R",
+    "project_path" : "global.R",
+    "properties" : {
+        "cursorPosition" : "36,0",
+        "scrollLine" : "10"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

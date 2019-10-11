@@ -118,9 +118,10 @@
    quali<-reactive({latte %>% 
      filter(prova2=="Quali") %>%
      filter(codaz==input$cod) %>%
-     select(prova,dtprel1,esito) %>% 
-     arrange(desc(dtprel1)) %>% 
-     pivot_wider(names_from=dtprel1,values_from=esito ) })
+     select(prova,dtprel,esito) %>% 
+     arrange(desc(dtprel)) %>% 
+       mutate(dtprel=format(dtprel, "%d-%m-%Y")) %>% 
+       pivot_wider(names_from=dtprel,values_from=esito ) })
      
      
    output$tq<-function(){
