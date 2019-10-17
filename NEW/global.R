@@ -7,10 +7,25 @@ library(kableExtra)
 library(DT)
 library(psych)
 library(tidyr)
+library(formattable)
+library(sparkline)
+library(htmltools)
+library(shiny)
 
 rm(list=ls())
-sheet <- gs_title("LMassa")
+
+options(scipen = 999)
+gs_auth(token = "googlesheets_token.rds")
+suppressMessages(gs_auth(token = "googlesheets_token.rds", verbose = FALSE))
+#sheet <- gs_title("LMassa")
+sheet <- gs_title("newlatte")
 latte<-gs_read(sheet)
+
+
+names(latte)<-c("nconf","dtprel","dtconf", "codaz", "prova",
+                "esito","esitodescr", "vet","propr","ageziologico",
+                "risnum", "matrice", "um")
+
 latte$risnum<-as.numeric(sub(",", ".", sub(".", "", latte$risnum, fixed=TRUE), fixed=TRUE))
 latte$codaz<-casefold(latte$codaz, upper = TRUE)
 latte$propr<-casefold(latte$propr, upper = TRUE)
@@ -26,19 +41,42 @@ latte$prova2<-ifelse(
     latte$prova=="Carica batterica totale", "Quanti", "Quali"
 )
 
+
+latte$esito<-ifelse(
+      latte$esito=="-", "N", 
+      ifelse(latte$esito=="P tipo 1", "P", 
+             ifelse ( latte$esito=="0,8", "P", latte$esito))
+)
+
+
+
 latte$codaz<-ifelse(latte$propr=="SUARDI LUIGI", "219BG035", latte$codaz )
 latte$codaz<-ifelse(latte$propr=="CAMPANA COSTANTINO E C. S.S", "245BG010", latte$codaz )
 latte<-latte %>% 
   filter(!is.na(codaz))
+latte$esito<-ifelse(latte$esito=="P1", "P", latte$esito)
+
+n<-latte %>% 
+  filter(prova2=="Quali") %>% 
+  group_by(anno, prova) %>% 
+  summarise(n=n())
+p<-latte %>% 
+  filter(prova2=="Quali") %>% 
+  filter(esito=="P") %>% 
+  group_by(anno, prova) %>% 
+  summarise(p=n())
+prev<-n %>% 
+  full_join(p) %>% 
+  replace_na(list(p=0)) %>% 
+  mutate("Pos"=(p/n)*100)
 
 
 
 
 
-x<-latte %>% 
-  filter(prova2=="Quali") %>%
-  filter(codaz=="133BG017") %>%
-  select(prova,dtprel,esito) %>% 
-  arrange(desc(dtprel)) %>% 
-  mutate(dtprel=format(dtprel, "%d-%m-%Y")) %>% 
-  pivot_wider(names_from=dtprel,values_from=esito )
+
+
+
+
+
+

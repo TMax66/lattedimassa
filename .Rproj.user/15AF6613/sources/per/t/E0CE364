@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1571227747176.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "E0CE364",
+    "lastKnownWriteTime" : 6,
+    "last_content_update" : -2147483648,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "45BBF315",
+        "caption" : "latte",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=latte&cache_key=45BBF315",
+        "displayedObservations" : 1911,
+        "environment" : "",
+        "object" : "latte",
+        "preview" : 0,
+        "totalObservations" : 1911,
+        "variables" : 13
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

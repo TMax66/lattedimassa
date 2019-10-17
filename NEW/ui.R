@@ -37,14 +37,25 @@ ui <- dashboardPage(
      valueBoxOutput("css", width=NULL),
      valueBoxOutput("cbt", width=NULL)),
    
+    
+    
      column(8,
-        selectInput("prova", "Seleziona il parametro",
-                    c(unique(as.character(subset(latte$prova, latte$prova2=="Quanti"))))),
-           plotOutput("p1", height = 500))
+        selectInput("prova", "Andamento Parametri quantitativi nel gruppo di allevementi",
+                    c(unique(as.character(subset(latte$prova, latte$prova2=="Quanti")))),"Cellule somatiche"),
+           plotOutput("p1"), 
+        
+        br(),hr(),
+        
+        selectInput("quali", "Andamento Paramentri qualitativi nel gruppo di allevamenti",
+                    c(unique(as.character(subset(latte$prova, latte$prova2=="Quali"))))),
+        plotOutput("p2")
+        
+        )
  
       ))),
     
       #####secondo tab item########
+   ###primo subitem----qualitativi###
     tabItem(
      tabName = "quali",
             fluidRow(
@@ -52,10 +63,7 @@ ui <- dashboardPage(
                    box(solidHeader = TRUE,
               
               selectInput("cod", "Codice Allevix",
-                                   c(unique(as.character(latte$codaz))))#,
-              
-              # selectInput("qual", "Prove qualitative",
-              # c(unique(as.character(subset(latte$prova, latte$prova2=="Quanti")))))
+                                   c(unique(as.character(latte$codaz))))
               
             )), 
      hr(),
@@ -68,6 +76,28 @@ ui <- dashboardPage(
      )
      ),
          
+   ######secondo subitem---quantitativi----####•
+   tabItem(
+     tabName = "quanti",
+     fluidRow(
+       box(solidHeader = TRUE,
+           selectInput("cod2", "Codice Allevix",
+                      c(unique(as.character(latte$codaz))))
+     )),
+     hr(),
+     br(),
+     fluidRow(
+       DT::dataTableOutput("info2"),
+       hr(),
+       tableOutput("tquant")
+
+     )
+
+   ),
+   # 
+   # 
+   
+   
     
     #   #####terzo tab item######
       tabItem(

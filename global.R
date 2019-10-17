@@ -4,6 +4,18 @@ library(lubridate)
 library(DT)
 
 rm(list=ls())
+
+
+# token <- gs_auth(cache = FALSE)
+# gd_token()
+# saveRDS(token, file = "googlesheets_token.rds")
+
+gs_auth(token = "googlesheets_token.rds")
+suppressMessages(gs_auth(token = "googlesheets_token.rds", verbose = FALSE))
+
+
+
+
 sheet <- gs_title("LMassa")
 latte<-gs_read(sheet,
                locale = readr::locale(decimal_mark = ","))
