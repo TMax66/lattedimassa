@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1571415604520.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1001165511",
+    "id" : "D37964A5",
+    "lastKnownWriteTime" : 1571576983,
+    "last_content_update" : 1571576983219,
+    "path" : "~/GitHub/lattedimassa/NEW/global.R",
+    "project_path" : "global.R",
+    "properties" : {
+        "cursorPosition" : "90,10",
+        "scrollLine" : "61"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
