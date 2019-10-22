@@ -19,7 +19,7 @@ options(scipen = 999)
 options(knitr.kable.NA = '')
 gs_auth(token = "googlesheets_token.rds")
 suppressMessages(gs_auth(token = "googlesheets_token.rds", verbose = FALSE))
-#sheet <- gs_title("LMassa")
+
 sheet <- gs_title("newlatte")
 latte<-gs_read(sheet)
 
@@ -70,29 +70,35 @@ p<-latte %>%
 prev<-n %>% 
   full_join(p) %>% 
   replace_na(list(p=0)) %>% 
-  mutate("Pos"=(p/n)*100)
+  mutate("Pos"=round((p/n)*100,1))
 
 
 
-latte %>%  
-  filter(prova=="Cellule somatiche")%>%
-  group_by(anno, nconf) %>%
-    summarise(css =geometric.mean(risnum, na.rm=T))%>% 
-    ungroup() %>% 
-  group_by(anno) %>% 
-    summarise(scc = round(mean(css, na.rm=T), 0)) %>% 
-    ggplot(aes(x=anno, y=scc, label=scc))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
-    geom_line(linetype = "dashed")+
-    labs(y=paste("media","Cellule somatiche"))
+is<-latte %>% 
+    filter(prova2=="Quali") %>%
+    select(codaz,prova,dtprel,esito) %>% 
+    mutate("n.c"=ifelse(esito=="N", 0,
+                       ifelse(esito=="I", NA, 1))) %>% 
+    drop_na(n.c) %>% 
+    group_by(codaz) %>% 
+    summarise(ncontrolli=n(), nc=sum(n.c)) %>% 
+    mutate("i.s"=1-(nc/ncontrolli))
+  
+  
+  
+ 
+
+  
+  
+   #pivot_wider(names_from=dtprel,values_from=n.c ) 
   
 
 
 
-latte %>% 
-  filter(anno==2016) %>% 
-  filter(prova=="Cellule somatiche") %>% 
-  group_by(anno,nconf)%>%    
-  summarise(css =geometric.mean(risnum, na.rm=T))%>% 
-  ungroup() %>% 
-  summarise(scc = round(mean(css, na.rm=T), 1))
+
+
+
+
+
+
 
