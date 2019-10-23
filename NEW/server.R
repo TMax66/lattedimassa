@@ -28,18 +28,41 @@
    })
    
    
-   output$camp<- renderValueBox({
+   # output$camp<- renderValueBox({
+   #   valueBox( 
+   # latte %>%   
+   #   filter(anno==max(latte$anno)) %>% 
+   #   group_by(anno,nconf)%>%    
+   #   summarise(ncampioni = n_distinct(nconf))%>% 
+   #   summarise(x=sum(ncampioni)) %>% 
+   #   ungroup() %>% 
+   #   summarise(ncamp = sum(x)), "#Campioni",
+   # color="navy"
+   # )
+   # })
+   
+   
+   output$is<- renderValueBox({
      valueBox( 
-   latte %>%   
-     filter(anno==max(latte$anno)) %>% 
-     group_by(anno,nconf)%>%    
-     summarise(ncampioni = n_distinct(nconf))%>% 
-     summarise(x=sum(ncampioni)) %>% 
-     ungroup() %>% 
-     summarise(ncamp = sum(x)), "#Campioni",
-   color="navy"
-   )
+       latte %>% 
+         filter(prova2=="Quali") %>%
+       
+         select(codaz,prova,dtprel,esito) %>% 
+         mutate("n.c"=ifelse(esito=="N", 0,
+                             ifelse(esito=="I", NA, 1))) %>% 
+         drop_na(n.c) %>% 
+         group_by(codaz) %>% 
+         summarise(ncontrolli=n(), nc=sum(n.c)) %>% 
+         ungroup(codaz) %>% 
+         summarise( i.s= round(1-(sum(nc)/sum(ncontrolli)),2)), "I.S",
+       color="red"
+     )
    })
+   
+   
+   
+   
+   
    
    output$prot<- renderValueBox({
      valueBox( 
@@ -250,6 +273,10 @@
    
    
    
+   
+   
+   
+   
 ####☻tabelle riassuntive####
 
    tAz<-reactive({   
@@ -277,6 +304,29 @@
  #     dom = 'Bfrtip',
  #     buttons = c("csv",'excel'))
  # )
+ 
+ tis<-reactive({
+   latte %>% 
+     filter(prova2=="Quali") %>%
+     select(codaz,prova,propr,dtprel,esito) %>% 
+     mutate("n.c"=ifelse(esito=="N", 0,
+                         ifelse(esito=="I", NA, 1))) %>% 
+     drop_na(n.c) %>% 
+     group_by(codaz, propr) %>% 
+     summarise(ncontrolli=n(), nc=sum(n.c)) %>% 
+     mutate("i.s"=round(1-(nc/ncontrolli),2)) %>% 
+     select(codaz,propr,ncontrolli, i.s) %>% 
+     arrange(i.s)
+   
+ })
+ 
+ output$tIS<-function()
+ {
+   kable(tis()) %>%
+     kable_styling()
+ }
+ 
+ 
 #############Grafici modali qualità latte##############   
   
 ####Proteine#####   
@@ -458,7 +508,31 @@ quangr<-reactive({
         geom_line(linetype = "dashed")+ labs(y="% Positività"))
     
    
+####grafico modale IS azienda
+    
+gis<-reactive({
+  latte %>% 
+  select(codaz,prova,dtprel,esito) %>% 
+      mutate("n.c"=ifelse(esito=="N", 0, 1)) %>%
+      drop_na(n.c) %>%
+      group_by(codaz, dtprel) %>%
+      summarise(ncontrolli=n(), nc=sum(n.c)) %>%
+      mutate(scontr=cumsum(ncontrolli), snc=cumsum(nc), cis=round(1-(snc/scontr),2),
+             is=1-(nc/ncontrolli))
+})
+    
+output$gCis <-renderPlot(
+  gis() %>% 
+    filter(codaz==input$cod) %>% 
+    arrange(dtprel) %>% 
+    ggplot(aes(x=dtprel, y=cis, label=cis))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+    geom_line(linetype = "dashed")+ labs(y="IS cumulativo")+scale_x_date(labels = date_format("%m-%Y")))
+  
+  
 
+    
+    
+    
    
 ###tabella info proprietario#############
 info<-reactive({ latte %>% 

@@ -31,7 +31,15 @@ dashboardBody(
      valueBoxOutput("aziende")),
      bsModal("AZ", "Aziende controllate", "clickdiv0",tableOutput("taz"), size = "large"),
      
-     valueBoxOutput("camp")),
+     
+     div(id='clickdiv13',
+     valueBoxOutput("is")),
+     bsModal("ins", "I.S", "clickdiv13",tableOutput("tIS"), size = "large")
+     
+     
+     
+     
+     ),
    
    hr(),
    hr(),
@@ -113,8 +121,10 @@ dashboardBody(
                                    c(unique(as.character(latte$codaz))))
             
             ), 
-            
-            valueBoxOutput("IS")
+
+            div(id='clickdiv14',
+            valueBoxOutput("IS")),
+            bsModal("cIS", "IS cumulativo", "clickdiv14",plotOutput("gCis"), size = "large")
             
            
               ), 
@@ -135,26 +145,7 @@ dashboardBody(
      )
      ),
          
-   ######secondo subitem---quantitativi----####•
-   # tabItem(
-   #   tabName = "quanti",
-   #   fluidRow(
-   #     box(solidHeader = TRUE,
-   #         selectInput("cod2", "Codice Allevix",
-   #                    c(unique(as.character(latte$codaz))))
-   #   )),
-   #   hr(),
-   #   br(),
-   #   fluidRow(
-   #     DT::dataTableOutput("info2"),
-   #     hr(),
-   #     tableOutput("tquant")
-   # 
-   #   )
-   # 
-   # ),
-   # 
-   # 
+  
    
    
     

@@ -9,6 +9,7 @@ library(psych)
 library(tidyr)
 library(formattable)
 library(shinyBS)
+library(scales)
 #library(sparkline)
 #library(htmltools)
 #library(shiny)
@@ -76,29 +77,18 @@ prev<-n %>%
 
 is<-latte %>% 
     filter(prova2=="Quali") %>%
-    select(codaz,prova,dtprel,esito) %>% 
+    select(codaz,prova,propr,dtprel,esito) %>% 
     mutate("n.c"=ifelse(esito=="N", 0,
                        ifelse(esito=="I", NA, 1))) %>% 
     drop_na(n.c) %>% 
     group_by(codaz) %>% 
     summarise(ncontrolli=n(), nc=sum(n.c)) %>% 
-    mutate("i.s"=1-(nc/ncontrolli))
+    mutate("i.s"=round(1-(nc/ncontrolli),2)) #%>% 
+ # ungroup() %>% 
   
   
   
- 
-
   
-  
-   #pivot_wider(names_from=dtprel,values_from=n.c ) 
-  
-
-
-
-
-
-
-
 
 
 
