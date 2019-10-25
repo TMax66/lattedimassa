@@ -52,6 +52,9 @@ names(latte)<-c("nconf","dtprel","dtconf", "codaz", "prova",
 
 latte$risnum<-as.numeric(sub(",", ".", sub(".", "", latte$risnum, fixed=TRUE), fixed=TRUE))
 latte$codaz<-casefold(latte$codaz, upper = TRUE)
+
+latte$codaz <- substr(as.character(latte$codaz),1,8)
+
 latte$propr<-casefold(latte$propr, upper = TRUE)
 latte$dtprel<-mdy(latte$dtprel)
 latte$dtprel1<-format(latte$dtprel, "%d-%m-%Y")
@@ -80,7 +83,7 @@ latte<-
   filter(esito %in% c("P" , "N"))
 
 
-x<-latte %>% 
+is<-latte %>% 
   filter(prova2=="ps") %>%
   filter(anno>2009) %>% 
   select(codaz,prova,anno,esito) %>% 
@@ -91,11 +94,8 @@ x<-latte %>%
   mutate(scontr=cumsum(ncontrolli), snc=cumsum(nc), cis=round(1-(snc/scontr),2),
          is=1-(nc/ncontrolli))
   
-  
-  #mutate("i.s"=1-(nc/ncontrolli)) %>%
-  #ggplot(aes(x=i.s))+geom_histogram(fill="lightblue", col="black")+facet_grid(~anno)
-  ggplot(aes(y=i.s, x=anno))+geom_point()+geom_line()
-  #geom_line(aes(y=ncontrolli))
+
+codaz<-unique(is$codaz)
 
 
 
@@ -119,15 +119,42 @@ prov<-subset(province, province@data$NOME %in% pr)
 
 
 
+library(readxl)
+bovbg <- read_excel("allbov.xls")
 
 
 
+names(bovbg)[2]<-'codice'
+bovbg$codice[bovbg$codice==''] <- NA
+bovbg$codaz <- substr(as.character(bovbg$codice),1,8)
+bovbg <- bovbg[!duplicated(bovbg$codaz),]
+coord <- bovbg[,c(17,6,5)]
+names(coord) <- c('codaz','long','lat')
+coord<-coord %>% 
+  filter(!is.na(long) & !is.na(lat)) %>% 
+  mutate("long"=as.numeric(long), "lat"=as.numeric(lat))
 
 
+coord<-subset(coord, coord$codaz%in%codaz)
 
+iscoord<-is %>% 
+ left_join(coord) %>% 
+  filter(anno==2018)
+  
+iscoord$iscat<-cut(iscoord$is,
+                   breaks = c(0,0.6,0.8,1.0001),right = FALSE,
+                   labels=c("basso (0-0.6)", "medio (0.6-0.8)", "alto (>0.8)"))
 
+pal<- colorFactor(palette = c("red", "orange", "steelblue"), domain=iscoord$iscat)
 
-
+leaflet(data=regione) %>% addTiles() %>% 
+  addPolygons(data=province, fill="F",color="") %>% 
+  addPolygons(data=prov, fill=F, color="black", weight=1, opacity=1.0) %>% 
+  # addMarkers(data=coord,~long, ~lat)
+  addCircles(data = iscoord, lat = ~lat, lng =~long,
+                   color=pal(iscoord$iscat),
+                   label=paste("I.S=", iscoord$is, "Type"=iscoord$iscat),
+             weight = 4, radius=100,stroke = TRUE, fillOpacity = 0.8) 
 
 
 
@@ -164,7 +191,6 @@ comuni<-rmapshaper::ms_simplify(comuni)
 
 pr<-c("BERGAMO","LECCO", "SONDRIO", "VARESE", "PAVIA", "COMO", "BRESCIA")
 prov<-subset(province, province@data$NOME %in% pr)
-
 
 
 

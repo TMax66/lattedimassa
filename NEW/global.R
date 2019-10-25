@@ -21,7 +21,7 @@ options(knitr.kable.NA = '')
 gs_auth(token = "googlesheets_token.rds")
 suppressMessages(gs_auth(token = "googlesheets_token.rds", verbose = FALSE))
 
-sheet <- gs_title("newlatte")
+sheet <- gs_title("lmassa")
 latte<-gs_read(sheet)
 
 
