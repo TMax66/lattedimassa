@@ -75,20 +75,38 @@ prev<-n %>%
 
 
 
-is<-latte %>% 
+is<-latte %>%
     filter(prova2=="Quali") %>%
-    select(codaz,prova,propr,dtprel,esito) %>% 
+    select(codaz,prova,propr,dtprel,esito) %>%
     mutate("n.c"=ifelse(esito=="N", 0,
-                       ifelse(esito=="I", NA, 1))) %>% 
-    drop_na(n.c) %>% 
-    group_by(codaz) %>% 
-    summarise(ncontrolli=n(), nc=sum(n.c)) %>% 
-    mutate("i.s"=round(1-(nc/ncontrolli),2)) #%>% 
- # ungroup() %>% 
+                       ifelse(esito=="I", NA, 1))) %>%
+    drop_na(n.c) %>%
+    group_by(codaz) %>%
+    summarise(ncontrolli=n(), nc=sum(n.c)) %>%
+    mutate("i.s"=round(1-(nc/ncontrolli),2)) #%>%
+#  # ungroup() %>% 
   
   
   
-  
+# is<-latte %>%
+#   filter(prova2=="Quali") %>%
+#   select(codaz,prova,propr,dtprel,esito) %>%
+#   mutate("n.c"=ifelse(esito=="N", 0,
+#                       ifelse(esito=="I", NA, 1))) %>%
+#   drop_na(n.c) %>%
+#   group_by(codaz) %>%
+#   summarise(ncontrolli=n(), nc=sum(n.c)) %>%
+#   mutate(Med=median(ncontrolli)) %>% 
+#   mutate(x=ifelse(ncontrolli<median(ncontrolli),nc+(median(ncontrolli)-ncontrolli), nc) ) %>% 
+#   mutate(x2=ifelse(x>ncontrolli, ncontrolli-1, 
+#                    ifelse(ncontrolli<median(ncontrolli) & x<=ncontrolli, nc+(ncontrolli-x), x))) %>% 
+#   mutate(is=1-(nc/ncontrolli),
+#                isW=1-(x2/ncontrolli))
+#   
+# 
+# 
+# tibble(c=c(rep(10,6), rep(100,6)), nc=c(seq(from=0 , to=5, by=1 ),seq(from=0, to=50, by=10))) %>%
+  #mutate(is=1-(nc/c), isW=is*c)
 
 
 
