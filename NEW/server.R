@@ -535,11 +535,17 @@ output$gCis <-renderPlot(
     
    
 ###tabella info proprietario#############
+# info<-reactive({ latte %>% 
+#      filter(codaz==input$cod) %>% 
+#      arrange(desc(dtprel)) %>% 
+#      select("proprietario"=propr, "ultimo controllo"=dtprel1) %>% 
+#      head(1)})
+
 info<-reactive({ latte %>% 
-     filter(codaz==input$cod) %>% 
-     arrange(desc(dtprel)) %>% 
-     select("proprietario"=propr, "ultimo controllo"=dtprel1) %>% 
-     head(1)})
+    filter(codaz==input$cod) %>% 
+    arrange(desc(dtprel)) %>% 
+    select( "ultimo controllo"=dtprel1) %>% 
+    head(1)})
      
 output$info<-function(){  
    knitr::kable(info())%>% 
