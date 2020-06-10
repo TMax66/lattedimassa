@@ -1,96 +1,636 @@
 #######################FUNZIONI DI R#############################################
  
- server<-function(input, output){
+ server<-function(input, output, session){
+   
+##########OVERVIEW##################
+   
+   output$year<-renderValueBox(
+     {
+       valueBox(max(latte$anno), "Anno di riferimento", icon("th"), 
+                color="navy")
 
-
+     }
+   )
    
    
-   output$info<-DT::renderDataTable(
-     latte %>% 
-       filter(codaz==input$cod) %>% 
-       arrange(desc(dtprel)) %>% 
-       select("proprietario"=propr, "ultimo controllo"=dtprel1) %>% 
-     head(1), 
-     options = list(searching=FALSE, dom = 't'))
-     
-     
-     
-  
- 
-     
    
-
-#Pagina 1
-  
-  # output$distPlot <- renderPlot({
-  #   latte %>%
-  #     filter(codaz==input$cod)%>%
-  #     filter(prova==input$cod2)%>%
-  #     ggplot(aes(dtprel, risnum))+geom_line()+geom_point()
-  # 
-  #     
-  #   })
-  # output$range <- renderPrint({ input$slider2 })
-  
-  
-  output$dt2<-DT::renderDataTable(
-    latte %>%
-      filter(prova==input$cod2)%>%
-      filter(codaz==input$cod) %>%
-      select(anno,  "conferimento"=nconf, vet, prova, "esito"=risnum) %>%
-      arrange(anno),
-    rownames=FALSE,
-      options=list(dom = 't')
-  )
-  
-  
-#pagina 2
-  
-  output$dt<- DT::renderDataTable(
-    latte, server= FALSE,filter = 'top',extensions = 'Buttons',class = 'cell-border stripe',
-    rownames = FALSE, options = list(
-      dom = 'Bfrtip',paging = TRUE,autoWidth = TRUE,
-      pageLength = 10,buttons = c("csv",'excel'))
-  )
-
-#Pagina 3
-  
-  #output$range <- renderPrint({ input$slider3 })
-  
-  output$dt3<-DT::renderDataTable(
-
-    latte %>%
-    filter(codaz==input$cod) %>%
-    filter(prova==input$cod4) %>%
-      select(anno, "conferimento"=nconf, vet, prova, esito) %>%
-      arrange(anno),
-    rownames=FALSE,options=list(dom = 't')
-)
-  
-  
-  
-  # output$dt4<-renderPrint(
-  #   if(is.null){print("Nessun dato disponibile")}
-  # )
-    
-
-   ####IL REACTIVE VA FUORI DALLA FUNZIONE CHE TI SERVE PER FARE LA TABELLA E/O IL GRAFICO####
-   # PREV<-reactive({
-   #  ANALISI<-latte %>%
-   #   group_by(anno, prova, codaz) %>%
-   #   summarise("n"=n())
-   # POSITIVI<-latte %>%
-   #   group_by(anno, prova, codaz) %>%
-   #   filter(esito=="P") %>%
-   #   summarise("P"=n())
-   # PREVAL<-ANALISI %>% 
-   #   full_join(POSITIVI)%>%
-   #   replace_na(list(P=0)) %>%
-   #   mutate("%positivi"=(P/n)*100)})
+   output$aziende <- renderValueBox({
+     valueBox(
+       latte %>% 
+         filter(anno==max(latte$anno))%>% 
+         group_by(codaz) %>% 
+         summarise(az=n_distinct(codaz)) %>% 
+         ungroup() %>% 
+         summarise(naz=sum(az)) %>% 
+         select(naz), "# Aziende", icon = icon("keyboard"),
+       color = "navy"
+     )
+   })
+   
+   
+   # output$camp<- renderValueBox({
+   #   valueBox( 
+   # latte %>%   
+   #   filter(anno==max(latte$anno)) %>% 
+   #   group_by(anno,nconf)%>%    
+   #   summarise(ncampioni = n_distinct(nconf))%>% 
+   #   summarise(x=sum(ncampioni)) %>% 
+   #   ungroup() %>% 
+   #   summarise(ncamp = sum(x)), "#Campioni",
+   # color="navy"
+   # )
+   # })
+   
+   
+   output$is<- renderValueBox({
+     valueBox( 
+       latte %>% 
+         filter(prova2=="Quali") %>%
+       
+         select(codaz,prova,dtprel,esito) %>% 
+         mutate("n.c"=ifelse(esito=="N", 0,
+                             ifelse(esito=="I", NA, 1))) %>% 
+         drop_na(n.c) %>% 
+         group_by(codaz) %>% 
+         summarise(ncontrolli=n(), nc=sum(n.c)) %>% 
+         ungroup(codaz) %>% 
+         summarise( i.s= round(1-(sum(nc)/sum(ncontrolli)),2)), "I.S",
+       color="blue"
+     )
+   })
+   
+   
+   
+   
+   
+   
+   output$prot<- renderValueBox({
+     valueBox( 
+       latte %>% 
+         filter(anno==max(latte$anno)) %>% 
+         filter(prova=="Proteine") %>% 
+         group_by(anno,nconf)%>%    
+         summarise(proteine = mean(risnum, na.rm=T))%>% 
+         ungroup() %>% 
+         summarise(prot = round(mean(proteine), 1)), "Proteine",
+       color="light-blue"
+     )
+   })
+   
+   output$grasso<- renderValueBox({
+     valueBox( 
+       latte %>% 
+         filter(anno==max(latte$anno)) %>% 
+         filter(prova=="Grasso") %>% 
+         group_by(anno,nconf)%>%    
+         summarise(grasso = mean(risnum, na.rm=T))%>% 
+         ungroup() %>% 
+         summarise(grass = round(mean(grasso), 1)), "Grasso",
+       color="light-blue"
+     )
+   })
+   
+   output$lattosio<- renderValueBox({
+     valueBox( 
+       latte %>% 
+         filter(anno==max(latte$anno)) %>% 
+         filter(prova=="Lattosio") %>% 
+         group_by(anno,nconf)%>%    
+         summarise(lattosio = mean(risnum, na.rm=T))%>% 
+         ungroup() %>% 
+         summarise(latt = round(mean(lattosio), 1)), "Lattosio",
+       color="light-blue"
+     )
+   })
+   
+   output$urea<- renderValueBox({
+     valueBox( 
+       latte %>% 
+         filter(anno==max(latte$anno)) %>% 
+         filter(prova=="Urea") %>% 
+         group_by(anno,nconf)%>%    
+         summarise(urea = mean(risnum, na.rm=T))%>% 
+         ungroup() %>% 
+         summarise(ur = round(mean(urea), 1)), "Urea",
+       color="light-blue"
+     )
+   })
+   
+   
+   
+   output$css<- renderValueBox({
+     valueBox( 
+       latte %>% 
+         filter(anno==max(latte$anno)) %>% 
+         filter(prova=="Cellule somatiche") %>% 
+         group_by(anno,nconf)%>%    
+         summarise(css =geometric.mean(risnum, na.rm=T))%>% 
+         ungroup() %>% 
+         summarise(scc = round(mean(css, na.rm=T), 1)), "SCC",
+       color="light-blue"
+     )
+   })
+   
+   output$cbt<- renderValueBox({
+     valueBox( 
+       latte %>% 
+         filter(anno==max(latte$anno)) %>% 
+         filter(prova=="Carica batterica totale") %>% 
+         group_by(anno,nconf)%>%    
+         summarise(cbt =geometric.mean(risnum, na.rm=T))%>% 
+         ungroup() %>% 
+         summarise(prot = round(mean(cbt, na.rm=T), 1)), "CBT",
+       color="light-blue"
+     )
+   })
+   
+   
+   # output$ibr<- renderValueBox({
+   #   valueBox( 
+   #     latte %>% 
+   #       filter(anno==max(latte$anno)) %>% 
+   #       filter(prova=="BHV1/Rinotracheite Infettiva Bovina: anticorpi nel latte") %>% 
+   #       group_by(anno,nconf)%>%    
+   #       summarise(cbt =geometric.mean(risnum, na.rm=T))%>% 
+   #       ungroup() %>% 
+   #       summarise(prot = round(geometric.mean(cbt, na.rm=T), 1)), "CBT",
+   #     color="green"
+   #   )
+   # })
    # 
    
+   output$ibr<- renderValueBox({
+     valueBox(
+       prev %>% 
+         filter(anno==max(latte$anno)) %>% 
+         filter(prova=="BHV1/Rinotracheite Infettiva Bovina: Ab x gE del virus nel latte") %>% 
+         group_by(prova)%>%    
+         summarise(IBR =round(mean(Pos, na.rm=T),1)) %>% 
+         select(IBR),"% IBR-gE",
+       color="olive"
+     )
+   })
+   
+   output$stg<- renderValueBox({
+     valueBox(
+       prev %>% 
+         filter(anno==max(latte$anno)) %>% 
+         filter(prova=="Esame batteriologico latte (ricerca Streptococcus agalactiae)") %>% 
+         group_by(prova)%>%    
+         summarise(stag =round(mean(Pos, na.rm=T),1)) %>% 
+         select(stag),"% Str.agalactiae",
+       color="olive"
+     )
+   })
+   
+   output$stf<- renderValueBox({
+     valueBox(
+       prev %>% 
+         filter(anno==max(latte$anno)) %>% 
+         filter(prova=="Esame batteriologico latte (ricerca Stafilococco coagulasi +)" ) %>% 
+         group_by(prova)%>%    
+         summarise(stau =round(mean(Pos, na.rm=T),1)) %>% 
+         select(stau),"% Staf.aureus",
+       color="olive"
+     )
+   })
+   
+   
+   output$fbq<- renderValueBox({
+     valueBox(
+       prev %>% 
+         filter(anno==max(latte$anno)) %>% 
+         filter(prova=="Febbre Q da Coxiella burnetii: agente eziologico") %>% 
+         group_by(prova)%>%    
+         summarise(fq =round(mean(Pos, na.rm=T),1)) %>% 
+         select(fq),"% Febbre Q",
+       color="olive"
+     )
+   })
+   
+   
+   
+   # output$neos<- renderValueBox({
+   #   valueBox(
+   #     prev %>% 
+   #       filter(anno==max(latte$anno)) %>% 
+   #       filter(prova=="Neospora caninum: anticorpi") %>% 
+   #       group_by(prova)%>%    
+   #       summarise(nsp =round(mean(Pos, na.rm=T),1)) %>% 
+   #       select(nsp),"% N.caninum",
+   #     color="navy"
+   #   )
+   # })
+   
+   
+   output$myc<- renderValueBox({
+      valueBox(
+         prev %>% 
+            filter(anno==max(latte$anno)) %>% 
+            filter(prova=="Mycoplasma bovis: agente eziologico" ) %>% 
+            group_by(prova)%>%    
+            summarise(mplasma =round(mean(Pos, na.rm=T),1)) %>% 
+            select(mplasma),"% Mycoplasma bovis",
+         color="olive"
+      )
+   })
+   
+   output$protho<- renderValueBox({
+      valueBox(
+         prev %>% 
+            filter(anno==max(latte$anno)) %>% 
+            filter(prova=="Prototheca spp." ) %>% 
+            group_by(prova)%>%    
+            summarise(prteca =round(mean(Pos, na.rm=T),1)) %>% 
+            select(prteca),"% Prototheca spp",
+         color="olive"
+      )
+   })
+
+   output$bvd<- renderValueBox({
+     valueBox(
+       prev %>% 
+         filter(anno==max(latte$anno)) %>% 
+         filter(prova=="BVD: agente eziologico" ) %>% 
+         group_by(prova)%>%    
+         summarise(bividi =round(mean(Pos, na.rm=T),1)) %>% 
+         select(bividi),"% BVD",
+       color="olive"
+     )
+   })
+   
+   output$IS<- renderValueBox({
+     valueBox(
+       is %>%
+         filter(codaz==input$cod) %>%  
+       select(i.s),"Indice sanitario",
+       color="navy"
+     )
+   })
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+####☻tabelle riassuntive####
+
+   tAz<-reactive({   
+   
+   latte %>% 
+      filter(anno==max(latte$anno))%>% 
+      group_by(codaz,vet, propr,dtprel) %>% 
+      summarise(ncontrolli=sum(n_distinct(codaz))) %>% 
+      ungroup() %>% 
+      group_by(codaz, vet, propr) %>% 
+      summarise(ncontrolli=sum(ncontrolli))
+   
+   })
+   
+ output$taz<-function()
+ {
+    kable(tAz()) %>%
+       kable_styling()
+ }
+
+ 
+ # output$taz<-DT::renderDataTable(
+ #   tAz(), server= FALSE,filter = 'top',extensions = 'Buttons',class = 'cell-border stripe',
+ #   rownames = FALSE, options = list(
+ #     dom = 'Bfrtip',
+ #     buttons = c("csv",'excel'))
+ # )
+ 
+ tis<-reactive({
+   latte %>% 
+     filter(prova2=="Quali") %>%
+     select(codaz,prova,propr,dtprel,esito) %>% 
+     mutate("n.c"=ifelse(esito=="N", 0,
+                         ifelse(esito=="I", NA, 1))) %>% 
+     drop_na(n.c) %>% 
+     group_by(codaz, propr) %>% 
+     summarise(ncontrolli=n(), nc=sum(n.c)) %>% 
+     mutate("i.s"=round(1-(nc/ncontrolli),2)) %>% 
+     select(codaz,propr,ncontrolli, i.s) %>% 
+     arrange(i.s)
+   
+ })
+ 
+ output$tIS<-function()
+ {
+   kable(tis()) %>%
+     kable_styling()
+ }
+ 
+ 
+#############Grafici modali qualità latte##############   
+  
+####Proteine#####   
+quanpr<-reactive({
+     
+     latte %>%
+       group_by(codaz, anno, prova) %>%
+       filter(prova=="Proteine") %>%
+       summarise(y=mean(risnum)) %>%
+       ungroup() %>%
+       group_by(anno) %>%
+       summarise(y=round(mean(y, na.rm = T),1))
+   })
+   output$pr<-renderPlot(
+     quanpr() %>%
+        ggplot(aes(x=anno, y=y, label=y))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+        geom_line(linetype = "dashed")+labs(y=paste("media","Proteine"))
+   )
+   
+#####Grasso#####
+quangr<-reactive({
+      
+      latte %>%
+         group_by(codaz, anno, prova) %>%
+         filter(prova=="Grasso") %>%
+         summarise(y=mean(risnum)) %>%
+         ungroup() %>%
+         group_by(anno) %>%
+         summarise(y=round(mean(y, na.rm = T),1))
+      
+   })
+   
+   
+   output$gr<-renderPlot(
+      quangr() %>%
+         ggplot(aes(x=anno, y=y, label=y))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+         geom_line(linetype = "dashed")+labs(y=paste("media","Grasso"))
+      
+      
+      
+      
+   )
+   
+#####Lattosio####
+   
+   quanlatt<-reactive({
+      
+      latte %>%
+         group_by(codaz, anno, prova) %>%
+         filter(prova=="Lattosio") %>%
+         summarise(y=mean(risnum)) %>%
+         ungroup() %>%
+         group_by(anno) %>%
+         summarise(y=round(mean(y, na.rm = T),1))
+      
+   })
+   
+   
+   output$ls<-renderPlot(
+      quanlatt() %>%
+         ggplot(aes(x=anno, y=y, label=y))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+         geom_line(linetype = "dashed")+
+         labs(y=paste("media","Lattosio"))
+      
+   )
+   
+   
+ ###Urea##
+   
+   quanurea<-reactive({
+     
+     latte %>%
+       group_by(codaz, anno, prova) %>%
+       filter(prova=="Urea") %>%
+       summarise(y=mean(risnum)) %>%
+       ungroup() %>%
+       group_by(anno) %>%
+       summarise(y=round(mean(y, na.rm = T),1))
+     
+   })
+   
+   
+   output$ur<-renderPlot(
+     quanurea() %>%
+       ggplot(aes(x=anno, y=y, label=y))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+       geom_line(linetype = "dashed")+
+       labs(y=paste("media","Urea"))
+     
+   )
+   
+   
+   
+   
+ ####CSS###
+   
+   quanscc<-reactive({
+      
+      latte %>%  
+         filter(prova=="Cellule somatiche")%>%
+         group_by(anno, nconf) %>%
+         summarise(css =geometric.mean(risnum, na.rm=T))%>% 
+         ungroup() %>% 
+         group_by(anno) %>% 
+         summarise(scc = round(mean(css, na.rm=T), 0)) 
+         
+      
+      
+   })
+   
+   
+   output$cel<-renderPlot(
+      quanscc() %>%
+         ggplot(aes(x=anno, y=scc, label=scc))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+         geom_line(linetype = "dashed")+
+         labs(y=paste("media","Cellule somatiche"))
+   )
+   
+###CBT####
+   quancbt<-reactive({
+      latte %>%  
+         filter(prova=="Carica batterica totale")%>%
+         group_by(anno, nconf) %>%
+         summarise(cbt =geometric.mean(risnum, na.rm=T))%>% 
+         ungroup() %>% 
+         group_by(anno) %>% 
+         summarise(cbt = round(mean(cbt, na.rm=T), 0)) 
+   })
+   
+   
+   output$car<-renderPlot(
+      quancbt() %>%
+         ggplot(aes(x=anno, y=cbt, label=cbt))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+         geom_line(linetype = "dashed")+
+         labs(y=paste("media","Carica batterica totale"))
+   )
+   
+   
+   
+   ####grafici modali sanitari###
+   
+   
+   output$gibr<- renderPlot(prev %>% 
+      filter(prova=="BHV1/Rinotracheite Infettiva Bovina: Ab x gE del virus nel latte") %>% 
+      ggplot(aes(x=anno, y=Pos, label=Pos))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+        geom_line(linetype = "dashed")+ labs(y="% Positività"))
+  
+    output$gstg<- renderPlot(prev %>% 
+      filter(prova=="Esame batteriologico latte (ricerca Streptococcus agalactiae)") %>% 
+        ggplot(aes(x=anno, y=Pos, label=Pos))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+        geom_line(linetype = "dashed")+ labs(y="% Positività"))
+    
+    output$gstf<- renderPlot(prev %>% 
+       filter(prova=="Esame batteriologico latte (ricerca Stafilococco coagulasi +)" ) %>% 
+         ggplot(aes(x=anno, y=Pos, label=Pos))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+         geom_line(linetype = "dashed")+ labs(y="% Positività"))
+   
+    output$gfbq<- renderPlot(prev %>% 
+       filter(prova=="Febbre Q da Coxiella burnetii: agente eziologico" ) %>% 
+         ggplot(aes(x=anno, y=Pos, label=Pos))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+         geom_line(linetype = "dashed")+ labs(y="% Positività"))
+    
+    # output$gneos<- renderPlot(prev %>% 
+    #   filter(prova=="Neospora caninum: anticorpi" ) %>% 
+    #   ggplot(aes(x=anno, y=Pos))+geom_point()+geom_line()+labs(y="% Positività"))
+   
+    output$gmyc<- renderPlot(prev %>% 
+        filter(prova=="Mycoplasma bovis: agente eziologico"  ) %>% 
+          ggplot(aes(x=anno, y=Pos, label=Pos))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+          geom_line(linetype = "dashed")+ labs(y="% Positività"))
+ 
+    output$gprotho<- renderPlot(prev %>% 
+       filter(prova=="Prototheca spp."  ) %>% 
+         ggplot(aes(x=anno, y=Pos, label=Pos))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+         geom_line(linetype = "dashed")+ labs(y="% Positività"))
+    
+    output$gbvd<- renderPlot(prev %>% 
+       filter(prova=="BVD: agente eziologico" ) %>% 
+       ggplot(aes(x=anno, y=Pos, label=Pos))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+        geom_line(linetype = "dashed")+ labs(y="% Positività"))
+    
+   
+####grafico modale IS azienda
+    
+gis<-reactive({
+  latte %>% 
+  select(codaz,prova,dtprel,esito) %>% 
+      mutate("n.c"=ifelse(esito=="N", 0, 1)) %>%
+      drop_na(n.c) %>%
+      group_by(codaz, dtprel) %>%
+      summarise(ncontrolli=n(), nc=sum(n.c)) %>%
+      mutate(scontr=cumsum(ncontrolli), snc=cumsum(nc), cis=round(1-(snc/scontr),2),
+             is=1-(nc/ncontrolli))
+})
+    
+output$gCis <-renderPlot(
+  gis() %>% 
+    filter(codaz==input$cod) %>% 
+    arrange(dtprel) %>% 
+    ggplot(aes(x=dtprel, y=cis, label=cis))+geom_point(col="lightblue", size=10)+geom_text(color="navy", size=4.5)+
+    geom_line(linetype = "dashed")+ labs(y="IS cumulativo")+scale_x_date(labels = date_format("%m-%Y")))
+  
+  
+
+    
+    
+    
+   
+###tabella info proprietario#############
+# info<-reactive({ latte %>% 
+#      filter(codaz==input$cod) %>% 
+#      arrange(desc(dtprel)) %>% 
+#      select("proprietario"=propr, "ultimo controllo"=dtprel1) %>% 
+#      head(1)})
+
+info<-reactive({ latte %>% 
+    filter(codaz==input$cod) %>% 
+    arrange(desc(dtprel)) %>% 
+    select( "ultimo controllo"=dtprel1) %>% 
+    head(1)})
+     
+output$info<-function(){  
+   knitr::kable(info())%>% 
+     kable_styling( full_width = F,fixed_thead = T, font_size = 15) 
+    }
+ 
+ 
+####tabelle pivot dati sanitari############
+ 
+ 
+   quali<-reactive({latte %>% 
+       filter(prova2=="Quali") %>%
+       filter(codaz==input$cod) %>%
+       select("Parametri Sanitari"=prova,dtprel,esito) %>% 
+       mutate(esito = 
+                ifelse(esito=="N",     
+                       cell_spec(esito, "html", color="green",bold=T),
+                       cell_spec(esito, "html", color="red", bold=T))) %>% 
+       
+       arrange(dtprel) %>% 
+       mutate(dtprel=format(dtprel, "%d-%m-%Y")) %>% 
+       pivot_wider(names_from=dtprel,values_from=esito ) 
+       
+       })
+     
+     
+   output$tq<-function(){
+     
+     knitr::kable(quali(), escape = F)%>% 
+       kable_styling( full_width = F,fixed_thead = T, font_size = 18) 
+    
+   }
+   
+    
+##controlli quantitativi########
+   
+   # output$info2<-DT::renderDataTable(
+   #   latte %>% 
+   #     filter(codaz==input$cod2) %>% 
+   #     arrange(desc(dtprel)) %>% 
+   #     select("proprietario"=propr, "ultimo controllo"=dtprel1) %>% 
+   #     head(1), 
+   #   options = list(searching=FALSE, dom = 't'))
 
    
    
+   
+######tabelle pivot dati qualità latte##########
+   
+  quanti<-reactive({latte %>%
+      filter(prova2=="Quanti") %>%
+      filter(codaz==input$cod) %>%
+      select("Parametri Qualità Latte"=prova,dtprel,risnum) %>%
+      arrange(dtprel) %>%
+      mutate(dtprel=format(dtprel, "%d-%m-%Y")) %>%
+      pivot_wider(names_from=dtprel,values_from=risnum )
 
+   })
+
+
+  output$tquant<-function(){
+    options(knitr.kable.NA = '')
+    knitr::kable(quanti(), escape = F)%>% 
+      kable_styling( full_width = F,fixed_thead = T, font_size = 18) 
+    
+  }
+  
+
+   
+   
+#####Base dati######################################
+   milk<-reactive({   
+     latte %>% 
+       select(dtconf, codaz, prova, esito, vet, ageziologico,risnum, anno)})
+
+   output$dt<- DT::renderDataTable(
+     milk(), server= FALSE,filter = 'top',extensions = 'Buttons',class = 'cell-border stripe',
+     rownames = FALSE, options = list(
+       dom = 'Bfrtip',paging = TRUE,
+       pageLength = 10,buttons = c("csv",'excel'))
+   )
+   
+  
+  
+  
+   
+   
 }
