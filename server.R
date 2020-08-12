@@ -6,8 +6,10 @@
    
    output$year<-renderValueBox(
      {
-       valueBox(max(latte$anno), "Anno di riferimento", icon("th"), 
-                color="navy")
+        valueBox(2019, "Anno di riferimento", icon("th"), 
+                        color="navy")
+       # valueBox(max(latte$anno), "Anno di riferimento", icon("th"), 
+       #          color="navy")
 
      }
    )
@@ -17,8 +19,9 @@
    output$aziende <- renderValueBox({
      valueBox(
        latte %>% 
-         filter(anno==max(latte$anno))%>% 
-         group_by(codaz) %>% 
+         # filter(anno==max(latte$anno))%>% 
+          filter(anno==2019)%>%
+          group_by(codaz) %>% 
          summarise(az=n_distinct(codaz)) %>% 
          ungroup() %>% 
          summarise(naz=sum(az)) %>% 
@@ -44,16 +47,15 @@
    
    output$is<- renderValueBox({
      valueBox( 
-       latte %>% 
-         filter(prova2=="Quali") %>%
-       
-         select(codaz,prova,dtprel,esito) %>% 
-         mutate("n.c"=ifelse(esito=="N", 0,
-                             ifelse(esito=="I", NA, 1))) %>% 
-         drop_na(n.c) %>% 
-         group_by(codaz) %>% 
-         summarise(ncontrolli=n(), nc=sum(n.c)) %>% 
-         ungroup(codaz) %>% 
+        latte %>% 
+           filter(prova2=="Quali") %>%
+           select(codaz,prova,dtprel,esito) %>% 
+           mutate("n.c"=ifelse(esito=="N", 0,
+                               ifelse(esito=="I", NA, 1))) %>% 
+           drop_na(n.c) %>% 
+           group_by(codaz) %>% 
+           summarise(ncontrolli=n(), nc=sum(n.c)) %>% 
+           #ungroup(codaz) %>% 
          summarise( i.s= round(1-(sum(nc)/sum(ncontrolli)),2)), "I.S",
        color="blue"
      )
@@ -67,7 +69,8 @@
    output$prot<- renderValueBox({
      valueBox( 
        latte %>% 
-         filter(anno==max(latte$anno)) %>% 
+         # filter(anno==max(latte$anno)) %>% 
+          filter(anno==2019)%>%
          filter(prova=="Proteine") %>% 
          group_by(anno,nconf)%>%    
          summarise(proteine = mean(risnum, na.rm=T))%>% 
@@ -80,7 +83,8 @@
    output$grasso<- renderValueBox({
      valueBox( 
        latte %>% 
-         filter(anno==max(latte$anno)) %>% 
+          # filter(anno==max(latte$anno))%>% 
+          filter(anno==2019)%>%
          filter(prova=="Grasso") %>% 
          group_by(anno,nconf)%>%    
          summarise(grasso = mean(risnum, na.rm=T))%>% 
@@ -93,7 +97,8 @@
    output$lattosio<- renderValueBox({
      valueBox( 
        latte %>% 
-         filter(anno==max(latte$anno)) %>% 
+          # filter(anno==max(latte$anno))%>% 
+          filter(anno==2019) %>%
          filter(prova=="Lattosio") %>% 
          group_by(anno,nconf)%>%    
          summarise(lattosio = mean(risnum, na.rm=T))%>% 
@@ -106,7 +111,8 @@
    output$urea<- renderValueBox({
      valueBox( 
        latte %>% 
-         filter(anno==max(latte$anno)) %>% 
+          # filter(anno==max(latte$anno))%>% 
+          filter(anno==2019) %>%
          filter(prova=="Urea") %>% 
          group_by(anno,nconf)%>%    
          summarise(urea = mean(risnum, na.rm=T))%>% 
@@ -121,7 +127,8 @@
    output$css<- renderValueBox({
      valueBox( 
        latte %>% 
-         filter(anno==max(latte$anno)) %>% 
+          # filter(anno==max(latte$anno))%>% 
+          filter(anno==2019 )%>%
          filter(prova=="Cellule somatiche") %>% 
          group_by(anno,nconf)%>%    
          summarise(css =geometric.mean(risnum, na.rm=T))%>% 
@@ -134,7 +141,8 @@
    output$cbt<- renderValueBox({
      valueBox( 
        latte %>% 
-         filter(anno==max(latte$anno)) %>% 
+          # filter(anno==max(latte$anno))%>% 
+          filter(anno==2019) %>% 
          filter(prova=="Carica batterica totale") %>% 
          group_by(anno,nconf)%>%    
          summarise(cbt =geometric.mean(risnum, na.rm=T))%>% 
@@ -162,7 +170,8 @@
    output$ibr<- renderValueBox({
      valueBox(
        prev %>% 
-         filter(anno==max(latte$anno)) %>% 
+          # filter(anno==max(latte$anno))%>% 
+          filter(anno==2019) %>%
          filter(prova=="BHV1/Rinotracheite Infettiva Bovina: Ab x gE del virus nel latte") %>% 
          group_by(prova)%>%    
          summarise(IBR =round(mean(Pos, na.rm=T),1)) %>% 
@@ -186,7 +195,8 @@
    output$stf<- renderValueBox({
      valueBox(
        prev %>% 
-         filter(anno==max(latte$anno)) %>% 
+          # filter(anno==max(latte$anno))%>% 
+          filter(anno==2019)%>%
          filter(prova=="Esame batteriologico latte (ricerca Stafilococco coagulasi +)" ) %>% 
          group_by(prova)%>%    
          summarise(stau =round(mean(Pos, na.rm=T),1)) %>% 
@@ -199,7 +209,8 @@
    output$fbq<- renderValueBox({
      valueBox(
        prev %>% 
-         filter(anno==max(latte$anno)) %>% 
+          # filter(anno==max(latte$anno))%>% 
+          filter(anno==2019)%>%
          filter(prova=="Febbre Q da Coxiella burnetii: agente eziologico") %>% 
          group_by(prova)%>%    
          summarise(fq =round(mean(Pos, na.rm=T),1)) %>% 
@@ -226,7 +237,8 @@
    output$myc<- renderValueBox({
       valueBox(
          prev %>% 
-            filter(anno==max(latte$anno)) %>% 
+            # filter(anno==max(latte$anno))%>% 
+            filter(anno==2019) %>%
             filter(prova=="Mycoplasma bovis: agente eziologico" ) %>% 
             group_by(prova)%>%    
             summarise(mplasma =round(mean(Pos, na.rm=T),1)) %>% 
@@ -238,7 +250,8 @@
    output$protho<- renderValueBox({
       valueBox(
          prev %>% 
-            filter(anno==max(latte$anno)) %>% 
+            # filter(anno==max(latte$anno))%>% 
+            filter(anno==2019)%>%
             filter(prova=="Prototheca spp." ) %>% 
             group_by(prova)%>%    
             summarise(prteca =round(mean(Pos, na.rm=T),1)) %>% 
@@ -250,7 +263,8 @@
    output$bvd<- renderValueBox({
      valueBox(
        prev %>% 
-         filter(anno==max(latte$anno)) %>% 
+          # filter(anno==max(latte$anno))%>% 
+          filter(anno==2019)%>%
          filter(prova=="BVD: agente eziologico" ) %>% 
          group_by(prova)%>%    
          summarise(bividi =round(mean(Pos, na.rm=T),1)) %>% 
@@ -282,7 +296,8 @@
    tAz<-reactive({   
    
    latte %>% 
-      filter(anno==max(latte$anno))%>% 
+         # filter(anno==max(latte$anno))%>% 
+         filter(anno==2019)%>%
       group_by(codaz,vet, propr,dtprel) %>% 
       summarise(ncontrolli=sum(n_distinct(codaz))) %>% 
       ungroup() %>% 
@@ -307,6 +322,8 @@
  
  tis<-reactive({
    latte %>% 
+       # filter(anno==max(latte$anno))%>% 
+     filter(anno==2019)%>%
      filter(prova2=="Quali") %>%
      select(codaz,prova,propr,dtprel,esito) %>% 
      mutate("n.c"=ifelse(esito=="N", 0,

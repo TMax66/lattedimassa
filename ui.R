@@ -11,8 +11,11 @@ ui <- dashboardPage(
 
       menuItem("Base dati", tabName="dati", icon = icon("edit")), 
       hr(),
-helpText(tags$strong("dati aggiornati al:", format(max(latte$dtprel),"%d-%m-%Y") , style="color:red")),
-      hr()
+# helpText(tags$strong("dati aggiornati al:", format(max(latte$dtprel),"%d-%m-%Y") , style="color:red")),
+helpText(tags$strong("dati aggiornati al:", "31-12-2019" , style="color:red")),
+
+
+hr()
       
       )
     

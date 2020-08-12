@@ -27,7 +27,8 @@ options(
   gargle_oauth_email = TRUE
 )
 drive_auth()
-sheets_auth(token = drive_token())
+
+gs4_auth(token = drive_token())
 mydrive<-drive_find(type = "spreadsheet")
 id<-mydrive %>% 
   filter(name=="lmassa") %>% 
@@ -41,7 +42,7 @@ names(latte)<-c("nconf","dtprel","dtconf", "codaz", "prova",
                 "esito","esitodescr", "vet","propr","ageziologico",
                 "risnum", "matrice", "um")
 
-latte$risnum<-as.numeric(sub(",", ".", sub(".", "", latte$risnum, fixed=TRUE), fixed=TRUE))
+latte$risnum<-as.numeric(sub(",", ".", sub(".", ".", latte$risnum, fixed=TRUE), fixed=TRUE))
 latte$codaz<-casefold(latte$codaz, upper = TRUE)
 latte$propr<-casefold(latte$propr, upper = TRUE)
 latte$dtprel<-as.Date(latte$dtprel)
