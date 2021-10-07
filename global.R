@@ -1,6 +1,4 @@
 library(tidyverse)
-library(googlesheets4)
-library(googledrive)
 library(shinydashboard)
 library(lubridate)
 library(knitr)
@@ -11,32 +9,10 @@ library(tidyr)
 library(formattable)
 library(shinyBS)
 library(scales)
-#library(sparkline)
-#library(htmltools)
-#library(shiny)
-
-
-#IL CODICE SEGUENTE SI FA SOLO LA PRIMA VOLTA CHE SI ACCEDE AL DRIVE DI GOOGLE
-# options(gargle_oauth_cache = ".secrets")
-# gargle::gargle_oauth_cache()
-# drive_auth()
-# list.files(".secrets/")
-
-options(
-  gargle_oauth_cache = ".secrets",
-  gargle_oauth_email = TRUE
-)
-drive_auth()
-
-gs4_auth(token = drive_token())
-mydrive<-drive_find(type = "spreadsheet")
-id<-mydrive %>% 
-  filter(name=="lmassa") %>% 
-  select(2)
-
-options(scipen = 999)
-
-latte<-read_sheet(id$id)
+library(readxl)
+ 
+ 
+latte <- read_excel("lmassa.xlsx")
 
 names(latte)<-c("nconf","dtprel","dtconf", "codaz", "prova",
                 "esito","esitodescr", "vet","propr","ageziologico",
@@ -97,29 +73,4 @@ is<-latte %>%
     group_by(codaz) %>%
     summarise(ncontrolli=n(), nc=sum(n.c)) %>%
     mutate("i.s"=round(1-(nc/ncontrolli),2)) #%>%
-#  # ungroup() %>% 
-  
-  
-  
-# is<-latte %>%
-#   filter(prova2=="Quali") %>%
-#   select(codaz,prova,propr,dtprel,esito) %>%
-#   mutate("n.c"=ifelse(esito=="N", 0,
-#                       ifelse(esito=="I", NA, 1))) %>%
-#   drop_na(n.c) %>%
-#   group_by(codaz) %>%
-#   summarise(ncontrolli=n(), nc=sum(n.c)) %>%
-#   mutate(Med=median(ncontrolli)) %>% 
-#   mutate(x=ifelse(ncontrolli<median(ncontrolli),nc+(median(ncontrolli)-ncontrolli), nc) ) %>% 
-#   mutate(x2=ifelse(x>ncontrolli, ncontrolli-1, 
-#                    ifelse(ncontrolli<median(ncontrolli) & x<=ncontrolli, nc+(ncontrolli-x), x))) %>% 
-#   mutate(is=1-(nc/ncontrolli),
-#                isW=1-(x2/ncontrolli))
-#   
-# 
-# 
-# tibble(c=c(rep(10,6), rep(100,6)), nc=c(seq(from=0 , to=5, by=1 ),seq(from=0, to=50, by=10))) %>%
-  #mutate(is=1-(nc/c), isW=is*c)
-
-
 
